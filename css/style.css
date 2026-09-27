@@ -124,7 +124,7 @@ button {
 .board {
   display: grid;
   gap: var(--gap);
-  padding: 10px;
+  padding: var(--bpad, 10px);
   width: max-content;
   margin: 0 auto;
   background: var(--panel);

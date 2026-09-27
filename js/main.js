@@ -26,10 +26,16 @@
 
   let game = null;
 
-  const MIN_BOARD_CELL = 30;
+  const MIN_BOARD_CELL = 24;
+  const COMPACT_BELOW = 40; // 棋盤格子小於這個大小時，間距和留白也一起縮小
 
   function setCell(cell) {
     document.documentElement.style.setProperty('--cell', `${cell}px`);
+  }
+
+  function setSpacing(gap, pad) {
+    document.documentElement.style.setProperty('--gap', `${gap}px`);
+    document.documentElement.style.setProperty('--bpad', `${pad}px`);
   }
 
   // 依棋盤大小與螢幕寬度決定每格大小
@@ -39,7 +45,7 @@
     const avail = Math.min(window.innerWidth, 520) - 32 - pad * 2;
     const cell = Math.max(MIN_BOARD_CELL, Math.min(68, Math.floor((avail - gap * (n - 1)) / n)));
     setCell(cell);
-    document.documentElement.style.setProperty('--gap', `${gap}px`);
+    setSpacing(gap, pad);
     return cell;
   }
 
@@ -49,6 +55,7 @@
     while (!game.fitTray() && cell > MIN_BOARD_CELL) {
       cell = Math.max(MIN_BOARD_CELL, cell - 2);
       setCell(cell);
+      if (cell < COMPACT_BELOW) setSpacing(4, 6);
     }
   }
 
