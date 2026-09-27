@@ -110,8 +110,8 @@
       el.dataset.piece = p.id;
       const w = Math.max(...p.cells.map((c) => c.dc)) + 1;
       const h = Math.max(...p.cells.map((c) => c.dr)) + 1;
-      el.style.gridTemplateColumns = `repeat(${w}, var(--cell))`;
-      el.style.gridTemplateRows = `repeat(${h}, var(--cell))`;
+      el.style.gridTemplateColumns = `repeat(${w}, var(--pc, var(--cell)))`;
+      el.style.gridTemplateRows = `repeat(${h}, var(--pc, var(--cell)))`;
       const has = new Set(p.cells.map((c) => key(c.dr, c.dc)));
       for (const c of p.cells) {
         const cell = document.createElement('div');
@@ -162,6 +162,7 @@
       this.flash = null;
 
       this.trayEl.replaceChildren(...this.pieces.filter((p) => !p.at).map((p) => this.pieceEl(p)));
+      this.fitTray();
 
       this.hooks.onChange({
         moves: this.moves,
@@ -169,6 +170,59 @@
         conflicts: bad.pairs,
         remaining: this.pieces.filter((p) => !p.at).length,
       });
+    }
+
+    // 依方塊數量縮小方塊區的格子，讓全部方塊不用捲動就看得到
+    fitTray() {
+      const tray = this.trayEl;
+      const pieces = this.pieces.filter((p) => !p.at);
+      const { cell, gap } = this.metrics();
+      const cs = getComputedStyle(tray);
+      const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) * 2;
+      const padY = parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) + parseFloat(cs.borderTopWidth) * 2;
+      const availW = tray.clientWidth - (padX - parseFloat(cs.borderLeftWidth) * 2) - 1;
+      const top = tray.getBoundingClientRect().top + window.scrollY;
+      const availH = window.innerHeight - top - padY - 12;
+      const dims = pieces.map((p) => ({
+        w: Math.max(...p.cells.map((c) => c.dc)) + 1,
+        h: Math.max(...p.cells.map((c) => c.dr)) + 1,
+      }));
+
+      const sizing = (s) => {
+        const g = Math.max(3, Math.round((gap * s) / cell));
+        return { s, g, space: Math.max(8, Math.round(s * 0.3)) };
+      };
+      // 模擬 flex-wrap 排版，算出總高度
+      const heightAt = ({ s, g, space }) => {
+        let rowW = 0;
+        let rowH = 0;
+        let total = 0;
+        for (const d of dims) {
+          const w = d.w * s + (d.w - 1) * g;
+          const h = d.h * s + (d.h - 1) * g;
+          if (rowW > 0 && rowW + space + w > availW) {
+            total += rowH + space;
+            rowW = 0;
+            rowH = 0;
+          }
+          rowW += (rowW > 0 ? space : 0) + w;
+          rowH = Math.max(rowH, h);
+        }
+        return total + rowH;
+      };
+
+      const MIN = 28;
+      let best = sizing(MIN);
+      for (let s = Math.floor(cell); s >= MIN; s--) {
+        const z = sizing(s);
+        if (heightAt(z) <= availH) {
+          best = z;
+          break;
+        }
+      }
+      tray.style.setProperty('--tcell', `${best.s}px`);
+      tray.style.setProperty('--tgap', `${best.g}px`);
+      tray.style.setProperty('--tspace', `${best.space}px`);
     }
 
     // ---------- 操作 ----------

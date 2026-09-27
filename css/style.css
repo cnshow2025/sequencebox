@@ -165,8 +165,8 @@ button {
   background: inherit;
 }
 
-.cell.jr::after { top: 22%; bottom: 22%; left: 100%; width: var(--gap); }
-.cell.jb::before { left: 22%; right: 22%; top: 100%; height: var(--gap); }
+.cell.jr::after { top: 22%; bottom: 22%; left: 100%; width: var(--pg, var(--gap)); }
+.cell.jb::before { left: 22%; right: 22%; top: 100%; height: var(--pg, var(--gap)); }
 
 .cell.seed { box-shadow: inset 0 0 0 3px var(--ink); }
 
@@ -204,7 +204,7 @@ button {
 
 .msg {
   min-height: 1.4em;
-  margin: 10px 0;
+  margin: 6px 0;
   text-align: center;
   color: var(--muted);
   font-size: 0.9rem;
@@ -213,20 +213,30 @@ button {
 .msg.warn { color: var(--bad); }
 
 .tray {
+  /* 方塊區的格子大小由 game.js 依方塊數量和剩餘畫面高度計算 */
+  --pc: var(--tcell, var(--cell));
+  --pg: var(--tgap, var(--gap));
   display: flex;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: var(--tspace, 16px);
   justify-content: center;
   align-items: flex-start;
-  min-height: calc(var(--cell) + 28px);
-  padding: 14px;
+  min-height: calc(var(--pc) + 28px);
+  padding: 12px;
   border: 2px dashed var(--line);
   border-radius: 16px;
 }
 
 .piece {
   display: grid;
-  gap: var(--gap);
+  gap: var(--pg, var(--gap));
+}
+
+.tray .cell {
+  width: var(--pc);
+  height: var(--pc);
+  border-radius: calc(var(--pc) * 0.17);
+  font-size: calc(var(--pc) * 0.46);
 }
 
 .ghost {

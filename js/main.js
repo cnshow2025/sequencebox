@@ -87,7 +87,11 @@
   $('btn-reset').addEventListener('click', start);
   $('btn-hint').addEventListener('click', () => game && game.hint());
   $('btn-next').addEventListener('click', start);
-  window.addEventListener('resize', () => game && layout(game.n));
+  window.addEventListener('resize', () => {
+    if (!game) return;
+    layout(game.n);
+    game.fitTray();
+  });
 
   start();
 })((window.SB = window.SB || {}));
