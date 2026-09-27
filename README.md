@@ -2,6 +2,8 @@
 
 把數字方塊拼到棋盤上，讓每一格和上下左右的鄰格**剛好差 1**。
 
+線上試玩：<https://cnshow2025.github.io/sequencebox/>
+
 ## 玩法
 
 - 棋盤上有粗框、小圓點的是**種子**，固定不能動。
@@ -32,7 +34,7 @@
 
 ## 執行
 
-純 HTML + CSS + JavaScript，不需要安裝或編譯，直接用瀏覽器打開 `index.html` 即可。
+純 HTML + CSS + JavaScript，不需要安裝或編譯，直接用瀏覽器打開 `index.html` 即可。推送到 `main` 後，`.github/workflows/pages.yml` 會自動部署到 GitHub Pages。
 
 ```
 index.html        頁面
