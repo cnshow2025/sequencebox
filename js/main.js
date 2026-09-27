@@ -26,14 +26,30 @@
 
   let game = null;
 
+  const MIN_BOARD_CELL = 30;
+
+  function setCell(cell) {
+    document.documentElement.style.setProperty('--cell', `${cell}px`);
+  }
+
   // 依棋盤大小與螢幕寬度決定每格大小
   function layout(n) {
     const gap = 6;
     const pad = 10;
     const avail = Math.min(window.innerWidth, 520) - 32 - pad * 2;
-    const cell = Math.max(38, Math.min(68, Math.floor((avail - gap * (n - 1)) / n)));
-    document.documentElement.style.setProperty('--cell', `${cell}px`);
+    const cell = Math.max(MIN_BOARD_CELL, Math.min(68, Math.floor((avail - gap * (n - 1)) / n)));
+    setCell(cell);
     document.documentElement.style.setProperty('--gap', `${gap}px`);
+    return cell;
+  }
+
+  // 方塊區縮到最小還放不下時，再依畫面高度縮小棋盤
+  function fitScreen() {
+    let cell = layout(game.n);
+    while (!game.fitTray() && cell > MIN_BOARD_CELL) {
+      cell = Math.max(MIN_BOARD_CELL, cell - 2);
+      setCell(cell);
+    }
   }
 
   function renderTabs() {
@@ -82,16 +98,13 @@
     $('level').textContent = `${SB.DIFFICULTIES[diff].label} · 第 ${level} 關`;
     renderTabs();
     game = new SB.Game({ board: $('board'), tray: $('tray') }, puzzle, { onChange: updateStatus, onWin: showWin });
+    fitScreen();
   }
 
   $('btn-reset').addEventListener('click', start);
   $('btn-hint').addEventListener('click', () => game && game.hint());
   $('btn-next').addEventListener('click', start);
-  window.addEventListener('resize', () => {
-    if (!game) return;
-    layout(game.n);
-    game.fitTray();
-  });
+  window.addEventListener('resize', () => game && fitScreen());
 
   start();
 })((window.SB = window.SB || {}));

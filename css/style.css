@@ -303,3 +303,19 @@ button {
 @keyframes pop {
   from { transform: scale(0.85); opacity: 0; }
 }
+
+/* ---------- 小螢幕：壓縮上方區域，留空間給棋盤和方塊區 ---------- */
+
+@media (max-width: 400px) {
+  .status { gap: 8px; flex-wrap: nowrap; }
+  .level { font-size: 0.92rem; white-space: nowrap; }
+  .stat { font-size: 0.82rem; white-space: nowrap; }
+  .actions button { padding: 5px 8px; font-size: 0.85rem; white-space: nowrap; }
+}
+
+@media (max-height: 700px) {
+  .app { padding-top: 8px; }
+  .top h1 { margin: 0 0 8px; font-size: 1.25rem; }
+  .tabs button { padding: 6px 4px; }
+  .status { margin: 8px 0; }
+}

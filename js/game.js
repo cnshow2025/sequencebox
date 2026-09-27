@@ -172,7 +172,7 @@
       });
     }
 
-    // 依方塊數量縮小方塊區的格子，讓全部方塊不用捲動就看得到
+    // 依方塊數量縮小方塊區的格子，讓全部方塊不用捲動就看得到；回傳是否放得下
     fitTray() {
       const tray = this.trayEl;
       const pieces = this.pieces.filter((p) => !p.at);
@@ -213,16 +213,19 @@
 
       const MIN = 28;
       let best = sizing(MIN);
+      let fits = false;
       for (let s = Math.floor(cell); s >= MIN; s--) {
         const z = sizing(s);
         if (heightAt(z) <= availH) {
           best = z;
+          fits = true;
           break;
         }
       }
       tray.style.setProperty('--tcell', `${best.s}px`);
       tray.style.setProperty('--tgap', `${best.g}px`);
       tray.style.setProperty('--tspace', `${best.space}px`);
+      return fits;
     }
 
     // ---------- 操作 ----------
