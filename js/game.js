@@ -6,6 +6,7 @@
 
   const hueOf = (v) => ((v - 1) * 38 + 200) % 360;
   const key = (r, c) => `${r},${c}`;
+  const sfx = (name) => SB.sound && SB.sound.play(name);
 
   // 格位邊長 = 方塊最長的一邊，旋轉後不變
   const slotSize = (p) =>
@@ -303,6 +304,7 @@
       if (!d.active) {
         if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < DRAG_THRESHOLD) return;
         d.active = true;
+        sfx('pick');
         d.ghost = this.pieceEl(d.piece);
         d.ghost.classList.add('ghost');
         document.body.append(d.ghost);
@@ -329,17 +331,22 @@
       const target = released ? this.dropTarget(e) : null;
       this.drag = null;
       const p = d.piece;
+      let sound = 'thud';
       if (target && target.onBoard) {
         const same = p.at && p.at.r === target.at.r && p.at.c === target.at.c;
-        if (!same && this.fits(p, p.cells, target.at)) {
+        if (same) {
+          sound = 'place';
+        } else if (this.fits(p, p.cells, target.at)) {
+          const before = this.conflicts(this.grid()).pairs;
           p.at = target.at;
           this.moves++;
+          sound = this.conflicts(this.grid()).pairs > before ? 'bad' : 'place';
         }
       } else if (target && p.at) {
         p.at = null; // 拖出棋盤 → 放回方塊區
       }
       this.render();
-      this.checkWin();
+      if (!this.checkWin()) sfx(sound);
     }
 
     // 點一下旋轉 90°；在棋盤上時以點到的那一格為中心
@@ -354,7 +361,7 @@
       piece.cells = cells;
       this.moves++;
       this.render();
-      this.checkWin();
+      if (!this.checkWin()) sfx('rotate');
     }
 
     hint() {
@@ -372,7 +379,7 @@
       this.hints++;
       this.flash = p.id;
       this.render();
-      this.checkWin();
+      if (!this.checkWin()) sfx('hint');
     }
 
     checkWin() {
@@ -380,8 +387,10 @@
       const full = g.every((row) => row.every(Boolean));
       if (full && this.conflicts(g).pairs === 0) {
         this.won = true;
+        sfx('win');
         this.hooks.onWin({ moves: this.moves, hints: this.hints });
       }
+      return this.won;
     }
   }
 

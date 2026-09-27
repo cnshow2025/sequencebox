@@ -1,10 +1,11 @@
 // 離線快取：先用快取秒開，同時在背景抓新版，下次開啟就是新版本。
-const CACHE = 'sequencebox-v1';
+const CACHE = 'sequencebox-v2';
 const ASSETS = [
   './',
   'index.html',
   'manifest.json',
   'css/style.css',
+  'js/sound.js',
   'js/generator.js',
   'js/game.js',
   'js/main.js',

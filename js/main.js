@@ -108,6 +108,19 @@
     fitScreen();
   }
 
+  function renderSound() {
+    const on = SB.sound.enabled;
+    $('btn-sound').textContent = on ? '🔊' : '🔇';
+    $('btn-sound').setAttribute('aria-label', on ? '音效：開（點一下關閉）' : '音效：關（點一下開啟）');
+  }
+
+  $('btn-sound').addEventListener('click', () => {
+    SB.sound.setEnabled(!SB.sound.enabled);
+    renderSound();
+    SB.sound.play('place');
+  });
+  renderSound();
+
   $('btn-reset').addEventListener('click', start);
   $('btn-hint').addEventListener('click', () => game && game.hint());
   $('btn-next').addEventListener('click', start);

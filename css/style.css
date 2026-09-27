@@ -49,6 +49,23 @@ body {
 
 /* ---------- 頂部 ---------- */
 
+.top { position: relative; }
+
+.sound-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.sound-toggle:active { transform: scale(0.92); }
+
 .top h1 {
   margin: 4px 0 12px;
   font-size: 1.5rem;
