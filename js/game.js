@@ -7,6 +7,10 @@
   const hueOf = (v) => ((v - 1) * 38 + 200) % 360;
   const key = (r, c) => `${r},${c}`;
 
+  // 格位邊長 = 方塊最長的一邊，旋轉後不變
+  const slotSize = (p) =>
+    Math.max(Math.max(...p.cells.map((c) => c.dc)), Math.max(...p.cells.map((c) => c.dr))) + 1;
+
   class Game {
     constructor(els, puzzle, hooks) {
       this.boardEl = els.board;
@@ -161,8 +165,17 @@
       }
       this.flash = null;
 
-      this.trayEl.replaceChildren(...this.pieces.filter((p) => !p.at).map((p) => this.pieceEl(p)));
-      this.fitTray();
+      // 每個方塊有固定的正方形格位；放上棋盤後格位留空，旋轉也不會移動
+      this.trayEl.replaceChildren(
+        ...this.pieces.map((p) => {
+          const slot = document.createElement('div');
+          slot.className = 'slot';
+          slot.style.setProperty('--k', slotSize(p));
+          if (p.at) slot.classList.add('empty');
+          else slot.append(this.pieceEl(p));
+          return slot;
+        })
+      );
 
       this.hooks.onChange({
         moves: this.moves,
@@ -172,10 +185,10 @@
       });
     }
 
-    // 依方塊數量縮小方塊區的格子，讓全部方塊不用捲動就看得到；回傳是否放得下
+    // 依格位數量縮小方塊區的格子，讓全部方塊不用捲動就看得到；回傳是否放得下。
+    // 格位整局固定，所以只在開局和畫面大小改變時計算
     fitTray() {
       const tray = this.trayEl;
-      const pieces = this.pieces.filter((p) => !p.at);
       const { cell, gap } = this.metrics();
       const cs = getComputedStyle(tray);
       const padX = parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) + parseFloat(cs.borderLeftWidth) * 2;
@@ -183,10 +196,7 @@
       const availW = tray.clientWidth - (padX - parseFloat(cs.borderLeftWidth) * 2) - 1;
       const top = tray.getBoundingClientRect().top + window.scrollY;
       const availH = window.innerHeight - top - padY - 12;
-      const dims = pieces.map((p) => ({
-        w: Math.max(...p.cells.map((c) => c.dc)) + 1,
-        h: Math.max(...p.cells.map((c) => c.dr)) + 1,
-      }));
+      const dims = this.pieces.map((p) => ({ w: slotSize(p), h: slotSize(p) }));
 
       const sizing = (s) => {
         const g = Math.max(3, Math.round((gap * s) / cell));

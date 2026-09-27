@@ -221,7 +221,6 @@ button {
   gap: var(--tspace, 16px);
   justify-content: center;
   align-items: flex-start;
-  min-height: calc(var(--pc) + 28px);
   padding: 12px;
   border: 2px dashed var(--line);
   border-radius: 16px;
@@ -230,6 +229,19 @@ button {
 .piece {
   display: grid;
   gap: var(--pg, var(--gap));
+}
+
+.slot {
+  display: grid;
+  place-items: center;
+  width: calc(var(--k) * var(--pc) + (var(--k) - 1) * var(--pg));
+  height: calc(var(--k) * var(--pc) + (var(--k) - 1) * var(--pg));
+}
+
+.slot.empty {
+  border: 1.5px dashed var(--line);
+  border-radius: calc(var(--pc) * 0.2);
+  opacity: 0.6;
 }
 
 .tray .cell {
