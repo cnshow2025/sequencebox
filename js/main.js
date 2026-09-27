@@ -21,7 +21,7 @@
     }
   }
 
-  const progress = Object.assign({ diff: 'easy', easy: 1, medium: 1, hard: 1 }, load());
+  const progress = Object.assign({ diff: 'easy', easy: 1, medium: 1, hard: 1, best: {} }, load());
   if (!SB.DIFFICULTIES[progress.diff]) progress.diff = 'easy';
 
   let game = null;
@@ -87,10 +87,81 @@
     $('msg').classList.toggle('warn', s.conflicts > 0);
   }
 
+  // ---------- 計時：第一次動作開始，離開 App 時暫停，過關時停止 ----------
+
+  const timer = { elapsed: 0, since: null, started: false, done: false, tick: null };
+
+  function now() {
+    return timer.elapsed + (timer.since === null ? 0 : performance.now() - timer.since);
+  }
+
+  function fmt(ms) {
+    const sec = Math.floor(ms / 1000);
+    const m = Math.floor(sec / 60);
+    const h = Math.floor(m / 60);
+    const ss = String(sec % 60).padStart(2, '0');
+    return h ? `${h}:${String(m % 60).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
+  }
+
+  function showTime() {
+    $('time').textContent = fmt(now());
+  }
+
+  function run() {
+    if (timer.since !== null) return;
+    timer.since = performance.now();
+    timer.tick = setInterval(showTime, 250);
+  }
+
+  function pause() {
+    if (timer.since === null) return;
+    timer.elapsed = now();
+    timer.since = null;
+    clearInterval(timer.tick);
+    showTime();
+  }
+
+  function resetTimer() {
+    pause();
+    Object.assign(timer, { elapsed: 0, started: false, done: false });
+    showTime();
+  }
+
+  function onAction() {
+    if (timer.started || timer.done) return;
+    timer.started = true;
+    run();
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) pause();
+    else if (timer.started && !timer.done) run();
+  });
+
   function showWin(s) {
-    progress[progress.diff]++;
+    pause();
+    timer.done = true;
+    const time = timer.elapsed;
+    const diff = progress.diff;
+    progress[diff]++;
+
+    // 最佳紀錄：每個難度一筆，用了提示不列入
+    const prev = progress.best[diff];
+    let best = '';
+    if (s.hints) {
+      best = prev ? `最佳 ${fmt(prev)}（用了提示，不列入紀錄）` : '用了提示，不列入紀錄';
+    } else if (!prev || time < prev) {
+      progress.best[diff] = Math.round(time);
+      best = prev ? `🏆 新紀錄！（原本 ${fmt(prev)}）` : '🏆 新紀錄！';
+    } else {
+      best = `最佳 ${fmt(prev)}`;
+    }
     save();
-    $('win-text').textContent = s.hints ? `步數 ${s.moves}，用了 ${s.hints} 次提示` : `步數 ${s.moves}，沒有用提示！`;
+
+    $('win-text').textContent = s.hints
+      ? `用時 ${fmt(time)} · 步數 ${s.moves} · 提示 ${s.hints} 次`
+      : `用時 ${fmt(time)} · 步數 ${s.moves} · 沒有用提示！`;
+    $('win-best').textContent = best;
     $('win').hidden = false;
     $('btn-next').focus();
   }
@@ -104,7 +175,8 @@
     $('win').hidden = true;
     $('level').textContent = `${SB.DIFFICULTIES[diff].label} · 第 ${level} 關`;
     renderTabs();
-    game = new SB.Game({ board: $('board'), tray: $('tray') }, puzzle, { onChange: updateStatus, onWin: showWin });
+    resetTimer();
+    game = new SB.Game({ board: $('board'), tray: $('tray') }, puzzle, { onChange: updateStatus, onWin: showWin, onAction });
     fitScreen();
   }
 

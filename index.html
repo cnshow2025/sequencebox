@@ -27,9 +27,10 @@
     <section class="status">
       <div class="level" id="level"></div>
       <div class="stat">步數 <b id="moves">0</b></div>
+      <div class="stat">⏱ <b id="time">0:00</b></div>
       <div class="actions">
-        <button id="btn-hint" type="button">💡 提示</button>
-        <button id="btn-reset" type="button">↺ 重來</button>
+        <button id="btn-hint" type="button" aria-label="提示">💡<span class="btn-label"> 提示</span></button>
+        <button id="btn-reset" type="button" aria-label="重來">↺<span class="btn-label"> 重來</span></button>
       </div>
     </section>
 
@@ -56,6 +57,7 @@
       <div class="big">🎉</div>
       <h2 id="win-title">過關！</h2>
       <p id="win-text"></p>
+      <p id="win-best" class="best"></p>
       <button id="btn-next" type="button" class="primary">下一關 →</button>
     </div>
   </div>

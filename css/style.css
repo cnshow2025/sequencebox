@@ -117,7 +117,7 @@ body {
 .level { font-weight: 700; }
 
 .stat { color: var(--muted); font-size: 0.9rem; }
-.stat b { color: var(--ink); }
+.stat b { color: var(--ink); font-variant-numeric: tabular-nums; }
 
 .actions { margin-left: auto; display: flex; gap: 6px; }
 
@@ -318,6 +318,9 @@ button {
 .dialog .big { font-size: 3rem; }
 .dialog h2 { margin: 4px 0; }
 .dialog p { color: var(--muted); margin: 6px 0 18px; }
+.dialog p#win-text { margin-bottom: 4px; }
+.dialog .best { font-weight: 700; color: var(--ink); }
+.dialog .best:empty { display: none; }
 
 .primary {
   border: 0;
@@ -336,10 +339,12 @@ button {
 /* ---------- 小螢幕：壓縮上方區域，留空間給棋盤和方塊區 ---------- */
 
 @media (max-width: 400px) {
-  .status { gap: 8px; flex-wrap: nowrap; }
+  .status { gap: 6px; flex-wrap: nowrap; }
+  .actions { gap: 4px; }
   .level { font-size: 0.92rem; white-space: nowrap; }
   .stat { font-size: 0.82rem; white-space: nowrap; }
-  .actions button { padding: 5px 8px; font-size: 0.85rem; white-space: nowrap; }
+  .actions button { padding: 5px 9px; font-size: 0.95rem; white-space: nowrap; }
+  .btn-label { display: none; } /* 窄螢幕只顯示圖示，留空間給計時 */
 }
 
 @media (max-height: 700px) {
@@ -347,4 +352,8 @@ button {
   .top h1 { margin: 0 0 8px; font-size: 1.25rem; }
   .tabs button { padding: 6px 4px; }
   .status { margin: 8px 0; }
+}
+
+@media (max-width: 340px) {
+  .status { flex-wrap: wrap; }
 }

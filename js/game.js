@@ -305,6 +305,7 @@
         if (Math.hypot(e.clientX - d.x0, e.clientY - d.y0) < DRAG_THRESHOLD) return;
         d.active = true;
         sfx('pick');
+        this.acted();
         d.ghost = this.pieceEl(d.piece);
         d.ghost.classList.add('ghost');
         document.body.append(d.ghost);
@@ -360,6 +361,7 @@
       }
       piece.cells = cells;
       this.moves++;
+      this.acted();
       this.render();
       if (!this.checkWin()) sfx('rotate');
     }
@@ -377,9 +379,15 @@
       p.cells = p.solution.map((s) => ({ dr: s.r - minR, dc: s.c - minC, v: s.v }));
       p.at = { r: minR, c: minC };
       this.hints++;
+      this.acted();
       this.flash = p.id;
       this.render();
       if (!this.checkWin()) sfx('hint');
+    }
+
+    // 通知外部玩家有動作（第一次動作時開始計時）
+    acted() {
+      if (this.hooks.onAction) this.hooks.onAction();
     }
 
     checkWin() {
