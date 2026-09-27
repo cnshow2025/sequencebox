@@ -107,4 +107,9 @@
   window.addEventListener('resize', () => game && fitScreen());
 
   start();
+
+  // PWA：註冊離線快取（用 file:// 直接開啟時略過）
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
 })((window.SB = window.SB || {}));

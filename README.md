@@ -4,6 +4,13 @@
 
 線上試玩：<https://cnshow2025.github.io/sequencebox/>
 
+## 安裝到手機（PWA）
+
+安裝後桌面會出現「數字拼圖」圖示，全螢幕開啟，沒有網路也能玩。
+
+- **iPhone（Safari）**：打開上面的網址 → 點下方「分享」按鈕 → 「加入主畫面」。
+- **Android（Chrome）**：打開網址 → 點右上角 ⋮ → 「安裝應用程式」或「加到主畫面」。
+
 ## 玩法
 
 - 棋盤上有粗框、小圓點的是**種子**，固定不能動。
@@ -42,4 +49,7 @@ css/style.css     樣式（手機優先，支援深色模式）
 js/generator.js   產生答案 → 切成方塊 → 隨機旋轉
 js/game.js        拖放、旋轉、判定、衝突標紅、提示
 js/main.js        難度切換、進度存檔、畫面尺寸
+manifest.json     PWA 設定（名稱、圖示、全螢幕）
+sw.js             Service Worker：離線快取
+icons/            App 圖示
 ```
