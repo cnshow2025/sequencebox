@@ -92,6 +92,13 @@
       return { cells, pairs };
     }
 
+    // 這個方塊在棋盤上是否有任何一格和鄰格沒有剛好差 1
+    hasConflict(p) {
+      if (!p.at) return false;
+      const bad = this.conflicts(this.grid()).cells;
+      return p.cells.some((c) => bad.has(key(p.at.r + c.dr, p.at.c + c.dc)));
+    }
+
     atSolution(p) {
       return (
         !!p.at &&
@@ -335,14 +342,11 @@
       let sound = 'thud';
       if (target && target.onBoard) {
         const same = p.at && p.at.r === target.at.r && p.at.c === target.at.c;
-        if (same) {
-          sound = 'place';
-        } else if (this.fits(p, p.cells, target.at)) {
-          const before = this.conflicts(this.grid()).pairs;
+        if (!same && this.fits(p, p.cells, target.at)) {
           p.at = target.at;
           this.moves++;
-          sound = this.conflicts(this.grid()).pairs > before ? 'bad' : 'place';
         }
+        if (same || p.at === target.at) sound = this.hasConflict(p) ? 'bad' : 'place';
       } else if (target && p.at) {
         p.at = null; // 拖出棋盤 → 放回方塊區
       }
@@ -363,7 +367,7 @@
       this.moves++;
       this.acted();
       this.render();
-      if (!this.checkWin()) sfx('rotate');
+      if (!this.checkWin()) sfx(piece.at && this.hasConflict(piece) ? 'bad' : 'rotate');
     }
 
     hint() {
