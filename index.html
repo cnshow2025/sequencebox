@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SequenceBox 數字拼圖</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>SequenceBox <span>數字拼圖</span></h1>
+      <nav class="tabs" id="tabs" role="tablist" aria-label="難度"></nav>
+    </header>
+
+    <section class="status">
+      <div class="level" id="level"></div>
+      <div class="stat">步數 <b id="moves">0</b></div>
+      <div class="actions">
+        <button id="btn-hint" type="button">💡 提示</button>
+        <button id="btn-reset" type="button">↺ 重來</button>
+      </div>
+    </section>
+
+    <div class="board" id="board" aria-label="棋盤"></div>
+    <p class="msg" id="msg" aria-live="polite"></p>
+    <section class="tray" id="tray" aria-label="方塊區"></section>
+
+    <details class="rules">
+      <summary>玩法說明</summary>
+      <ul>
+        <li>把下方的數字方塊拖到棋盤上，填滿每一格。</li>
+        <li>每一格和上下左右的鄰格，數字必須<b>剛好差 1</b>。</li>
+        <li>有粗框和小圓點的是<b>種子</b>，固定不能動。</li>
+        <li>點一下方塊可以<b>順時針旋轉 90°</b>。</li>
+        <li>把棋盤上的方塊拖出棋盤，就會放回方塊區。</li>
+        <li>紅框表示那兩格沒有剛好差 1。</li>
+        <li>小技巧：相鄰兩格一定一奇一偶，就像西洋棋盤的黑白格。</li>
+      </ul>
+    </details>
+  </main>
+
+  <div class="overlay" id="win" hidden>
+    <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="win-title">
+      <div class="big">🎉</div>
+      <h2 id="win-title">過關！</h2>
+      <p id="win-text"></p>
+      <button id="btn-next" type="button" class="primary">下一關 →</button>
+    </div>
+  </div>
+
+  <script src="js/generator.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
